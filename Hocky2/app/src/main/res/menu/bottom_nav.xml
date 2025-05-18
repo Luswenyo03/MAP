@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:iconTint="@color/white"
+        android:title="Home">
+    </item>
+    <item
+        android:id="@+id/events"
+        android:icon="@drawable/calendar_add_on_24dp_e8eaed_fill0_wght400_grad0_opsz24"
+        android:iconTint="@color/white"
+        android:title="Event">
+    </item>
+    <item
+        android:id="@+id/News_updates"
+        android:icon="@drawable/news"
+        android:title="News">
+    </item>
+    <item
+        android:id="@+id/team_reg"
+        android:icon="@drawable/team_add"
+        android:title="Team">
+    </item>
+    <item
+        android:id="@+id/player_manage"
+        android:icon="@drawable/player_add"
+        android:title="Player">
+    </item>
+</menu>
