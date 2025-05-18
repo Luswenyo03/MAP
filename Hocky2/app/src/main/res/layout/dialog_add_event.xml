@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_coners">
+
+    <EditText
+        android:id="@+id/event_name_input"
+        android:layout_width="385dp"
+        android:layout_height="66dp"
+        android:hint="Event Name" />
+
+    <EditText
+        android:id="@+id/event_date_input"
+        android:layout_width="383dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="8dp"
+        android:hint="Date (e.g., 10 July 2025)" />
+
+    <EditText
+        android:id="@+id/event_location_input"
+        android:layout_width="385dp"
+        android:layout_height="71dp"
+        android:layout_marginTop="8dp"
+        android:hint="Location" />
+</LinearLayout>
