@@ -22,19 +22,4 @@
         android:name="com.example.hocky.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
-
-    <fragment
-        android:id="@+id/playerListFragment"
-        android:name="com.example.hocky.PlayerListFragment"
-        tools:layout="@layout/fragment_player_list">
-
-        <action
-            android:id="@+id/action_to_playerManagement"
-            app:destination="@id/playerManagementFragment"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/playerManagementFragment"
-        android:name="com.example.hocky.PlayerManagementFragment"
-        tools:layout="@layout/fragment_player_management"/>
 </navigation>
