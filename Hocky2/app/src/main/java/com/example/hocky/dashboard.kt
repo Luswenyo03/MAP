@@ -1,6 +1,5 @@
 package com.example.hocky
 
-import PlayerListFragment
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -36,11 +35,6 @@ class dashboard : AppCompatActivity() {
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.frame_layout, fragment)
-            .addToBackStack(null)
             .commit()
-    }
-
-    fun setSelectedNavItem(itemId: Int) {
-        findViewById<BottomNavigationView>(R.id.bottom_nav).selectedItemId = itemId
     }
 }

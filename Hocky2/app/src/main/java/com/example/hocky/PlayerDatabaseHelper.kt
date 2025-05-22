@@ -4,14 +4,15 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
-// PlayerDatabaseHelper.kt
 class PlayerDatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        const val DATABASE_NAME = "hockey.db"
-        const val DATABASE_VERSION = 1
+        private const val TAG = "PlayerDatabaseHelper"
+        private const val DATABASE_NAME = "hockey.db"
+        private const val DATABASE_VERSION = 2  // Incremented version for schema changes
 
         // Player Table
         const val TABLE_PLAYERS = "players"
@@ -27,72 +28,105 @@ class PlayerDatabaseHelper(context: Context) :
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val createPlayerTable = """
-            CREATE TABLE $TABLE_PLAYERS (
-                $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COLUMN_NAME TEXT NOT NULL,
-                $COLUMN_DOB TEXT NOT NULL,
-                $COLUMN_JERSEY TEXT NOT NULL,
-                $COLUMN_CONTACT TEXT NOT NULL,
-                $COLUMN_EMAIL TEXT,
-                $COLUMN_TEAM TEXT NOT NULL,
-                $COLUMN_GENDER TEXT NOT NULL,
-                $COLUMN_POSITION TEXT NOT NULL
-            );
-        """.trimIndent()
-        db.execSQL(createPlayerTable)
+        try {
+            val createPlayerTable = """
+                CREATE TABLE $TABLE_PLAYERS (
+                    $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    $COLUMN_NAME TEXT NOT NULL,
+                    $COLUMN_DOB TEXT,
+                    $COLUMN_JERSEY INTEGER NOT NULL,
+                    $COLUMN_CONTACT TEXT NOT NULL,
+                    $COLUMN_EMAIL TEXT,
+                    $COLUMN_TEAM TEXT NOT NULL,
+                    $COLUMN_GENDER TEXT NOT NULL,
+                    $COLUMN_POSITION TEXT NOT NULL
+                );
+            """.trimIndent()
+            db.execSQL(createPlayerTable)
+            Log.d(TAG, "Database created successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error creating database", e)
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYERS")
-        onCreate(db)
-    }
-
-    // Insert a new player
-    fun insertPlayer(player: Player): Boolean {
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put(COLUMN_NAME, player.name)
-            put(COLUMN_DOB, player.dob)
-            put(COLUMN_JERSEY, player.jerseyNumber)
-            put(COLUMN_CONTACT, player.contact)
-            put(COLUMN_EMAIL, player.email)
-            put(COLUMN_TEAM, player.team)
-            put(COLUMN_GENDER, player.gender)
-            put(COLUMN_POSITION, player.position)
+        try {
+            db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYERS")
+            onCreate(db)
+            Log.d(TAG, "Database upgraded from $oldVersion to $newVersion")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error upgrading database", e)
         }
-        val result = db.insert(TABLE_PLAYERS, null, values)
-        db.close()
-        return result != -1L
     }
 
-    // Get all players
+    // Insert a new player with transaction and error handling
+    fun addPlayer(player: Player): Long {
+        val db = writableDatabase
+        return try {
+            db.beginTransaction()
+            val values = ContentValues().apply {
+                put(COLUMN_NAME, player.name)
+                put(COLUMN_DOB, player.dob)
+                put(COLUMN_JERSEY, player.jerseyNumber)
+                put(COLUMN_CONTACT, player.contact)
+                put(COLUMN_EMAIL, player.email)
+                put(COLUMN_TEAM, player.team)
+                put(COLUMN_GENDER, player.gender)
+                put(COLUMN_POSITION, player.position)
+            }
+            val id = db.insert(TABLE_PLAYERS, null, values)
+            db.setTransactionSuccessful()
+            id
+        } catch (e: Exception) {
+            Log.e(TAG, "Error adding player", e)
+            -1L
+        } finally {
+            db.endTransaction()
+            db.close()
+        }
+    }
+
+    // Get all players with improved cursor handling
     fun getAllPlayers(): List<Player> {
         val players = mutableListOf<Player>()
         val db = readableDatabase
-        val cursor = db.query(
-            TABLE_PLAYERS, null, null, null, null, null, "$COLUMN_ID DESC"
+        var cursor = db.query(
+            TABLE_PLAYERS,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "$COLUMN_NAME ASC"  // Sort by name by default
         )
-        with(cursor) {
-            while (moveToNext()) {
-                players.add(
-                    Player(
-                        id = getInt(getColumnIndexOrThrow(COLUMN_ID)),
-                        name = getString(getColumnIndexOrThrow(COLUMN_NAME)),
-                        dob = getString(getColumnIndexOrThrow(COLUMN_DOB)),
-                        jerseyNumber = getString(getColumnIndexOrThrow(COLUMN_JERSEY)),
-                        contact = getString(getColumnIndexOrThrow(COLUMN_CONTACT)),
-                        email = if (isNull(getColumnIndexOrThrow(COLUMN_EMAIL))) null
-                        else getString(getColumnIndexOrThrow(COLUMN_EMAIL)),
-                        team = getString(getColumnIndexOrThrow(COLUMN_TEAM)),
-                        gender = getString(getColumnIndexOrThrow(COLUMN_GENDER)),
-                        position = getString(getColumnIndexOrThrow(COLUMN_POSITION))
+
+        cursor.use {
+            while (it.moveToNext()) {
+                try {
+                    players.add(
+                        Player(
+                            id = it.getLong(it.getColumnIndexOrThrow(COLUMN_ID)),
+                            name = it.getString(it.getColumnIndexOrThrow(COLUMN_NAME)),
+                            dob = it.getString(it.getColumnIndexOrThrow(COLUMN_DOB)),
+                            jerseyNumber = it.getInt(it.getColumnIndexOrThrow(COLUMN_JERSEY)),
+                            contact = it.getString(it.getColumnIndexOrThrow(COLUMN_CONTACT)),
+                            email = it.getStringOrNull(it.getColumnIndexOrThrow(COLUMN_EMAIL)),
+                            team = it.getString(it.getColumnIndexOrThrow(COLUMN_TEAM)),
+                            gender = it.getString(it.getColumnIndexOrThrow(COLUMN_GENDER)),
+                            position = it.getString(it.getColumnIndexOrThrow(COLUMN_POSITION))
+                        )
                     )
-                )
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error parsing player data", e)
+                }
             }
-            close()
         }
         db.close()
         return players
+    }
+
+    // Extension function for safer null handling
+    private fun android.database.Cursor.getStringOrNull(columnIndex: Int): String? {
+        return if (isNull(columnIndex)) null else getString(columnIndex)
     }
 }

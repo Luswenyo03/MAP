@@ -1,13 +1,13 @@
 package com.example.hocky
 
 data class Player(
-    val id: Int = 0,
+    val id: Long = 0,
     val name: String,
-    val dob: String,
-    val jerseyNumber: String,
-    val contact: String,
-    val email: String?,
+    val position: String,
     val team: String,
-    val gender: String,
-    val position: String
+    val jerseyNumber: Int,
+    val dob: String? = null,
+    val contact: String? = null,
+    val email: String? = null,
+    val gender: String? = null
 )

@@ -1,25 +1,30 @@
-// PlayerAdapter.kt
 package com.example.hocky
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hocky.Player
-import com.example.hocky.R
 
-class PlayerAdapter(private var players: List<Player> = emptyList()) :
-    RecyclerView.Adapter<PlayerAdapter.PlayerViewHolder>() {
+class PlayerAdapter(
+    private var players: List<Player> = emptyList(),
+    private val onItemClick: (Player) -> Unit = {} // Optional click listener
+) : RecyclerView.Adapter<PlayerAdapter.PlayerViewHolder>() {
 
     inner class PlayerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameView: TextView = itemView.findViewById(R.id.tvPlayerName)
         private val positionView: TextView = itemView.findViewById(R.id.tvPosition)
         private val teamView: TextView = itemView.findViewById(R.id.tvTeam)
+        private val jerseyView: TextView = itemView.findViewById(R.id.tvJerseyNumber) // New field
 
         fun bind(player: Player) {
             nameView.text = player.name
             positionView.text = player.position
             teamView.text = player.team
+            jerseyView.text = "#${player.jerseyNumber}" // Format jersey number
+
+            // Optional click handling
+            itemView.setOnClickListener { onItemClick(player) }
         }
     }
 

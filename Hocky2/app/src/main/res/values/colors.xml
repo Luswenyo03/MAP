@@ -8,4 +8,13 @@
     <color name="paleYellow">#F5DB02</color>
     <color name="spaceGrey">#161619</color>
     <color name="colorPrimary">#FF6200EE</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="design_default_color_primary">#6200EE</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="gray_600">#FF757575</color>
+    <color name="darkBackground">#2B2B2B</color>
+    <color name="darkSurface">#FF1E1E1E</color>
+
 </resources>

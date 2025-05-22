@@ -8,10 +8,17 @@
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:background">?attr/selectableItemBackground</item>
+
     </style>
 
     <style name="PlayerTableData.Name" parent="PlayerTableData">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">16sp</item>
     </style>
+    <string-array name="positions_array">
+        <item>Goalkeeper</item>
+        <item>Defender</item>
+        <item>Midfielder</item>
+        <item>Forward</item>
+    </string-array>
 </resources>
