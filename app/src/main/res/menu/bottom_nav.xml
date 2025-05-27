@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home_24dp_000_fill0_wght400_grad0_opsz24"
+        android:iconTint="@color/md_theme_secondaryFixed_highContrast"
+        android:title="Home">
+    </item>
+    <item
+        android:id="@+id/matches"
+        android:icon="@drawable/whistle"
+        android:iconTint="@color/md_theme_secondaryFixed_highContrast"
+        android:title="Matches">
+    </item>
+    <item
+        android:id="@+id/News"
+        android:icon="@drawable/calendar_days_solid"
+        android:iconTint="@color/md_theme_secondaryFixed_highContrast"
+        android:title="News">
+    </item>
+    <item
+        android:id="@+id/stats"
+        android:iconTint="@color/md_theme_secondaryFixed_highContrast"
+        android:icon="@drawable/equalizer_24dp_000_fill0_wght400_grad0_opsz24"
+        android:title="Stats">
+    </item>
+
+</menu>

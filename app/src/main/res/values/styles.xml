@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.MyApp.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MyApp.CornerRadius</item>
+    </style>
+
+    <style name="ShapeAppearance.MyApp.CornerRadius" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">50dp</item>  <!-- Set the radius here -->
+    </style>
+
+</resources>
