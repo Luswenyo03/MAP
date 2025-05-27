@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Keep all color definitions here ONLY -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#FF6200EE</color>
+    <color name="spaceBlack">#222226</color>
+    <color name="paleYellow">#F5DB02</color>
+    <color name="spaceGrey">#161619</color>
+    <color name="colorPrimary">#FF6200EE</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="design_default_color_primary">#6200EE</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="gray_600">#FF757575</color>
+    <color name="darkBackground">#2B2B2B</color>
+    <color name="darkSurface">#FF1E1E1E</color>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "521414938205",
+    "project_id": "hockyapp-6bcae",
+    "storage_bucket": "hockyapp-6bcae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521414938205:android:b077a395aae42e47bd07b4",
+        "android_client_info": {
+          "package_name": "com.example.hocky"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5U8OXvp0hCcqupNnVDtM8lgL65K1clDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
