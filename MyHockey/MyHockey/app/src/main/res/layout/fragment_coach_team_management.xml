@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Formations Horizontal Scroll -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/formationRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:layout_marginBottom="16dp"
+        android:padding="4dp"
+        android:clipToPadding="false"
+        android:background="@drawable/round_con" />
+
+    <!-- Scrollable Field Area -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:background="@drawable/field"
+        android:clipToPadding="false">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/formationContainer"
+            android:layout_width="match_parent"
+            android:layout_height="800dp"
+            android:padding="16dp">
+            <!-- Player positions will be dynamically added and absolutely positioned here -->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</LinearLayout>
