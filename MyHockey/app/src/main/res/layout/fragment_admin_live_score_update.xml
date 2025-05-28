@@ -1,0 +1,153 @@
+<!-- res/layout/fragment_live_score.xml -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <!-- Match header -->
+    <TextView
+        android:id="@+id/tvMatchTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Team A vs Team B"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="12dp" />
+
+    <!-- Score display -->
+    <LinearLayout
+        android:id="@+id/scoreLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingBottom="24dp">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center" android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvTeamAName"
+                android:text="Team A"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvTeamAScore"
+                android:text="0"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=":"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical" />
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center" android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvTeamBName"
+                android:text="Team B"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvTeamBScore"
+                android:text="0"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:paddingTop="8dp">
+
+
+        <LinearLayout
+            android:id="@+id/teamAPlayersContainer"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/round_con"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:layout_marginEnd="4dp" android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Team A Players"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTeamAPlayers"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/teamBPlayersContainer"
+            android:layout_width="0dp"
+            android:background="@drawable/round_con"
+            android:layout_weight="1"
+            android:orientation="vertical"
+
+            android:padding="8dp"
+            android:layout_marginStart="4dp" android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Team B Players"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTeamBPlayers"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,27 @@
+<!-- res/layout/activity_matches.xml -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- RecyclerView for days -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/daysRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:clipToPadding="false" />
+
+    <!-- Floating Action Button to add a match -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addMatchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="end|bottom"
+        android:contentDescription="Add Match"
+        android:src="@drawable/add" />
+
+</LinearLayout>

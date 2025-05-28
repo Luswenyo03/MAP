@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".admin_home">
+
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="444dp"
+        android:layout_height="284dp"
+        android:src="@drawable/bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="16dp"
+        app:columnCount="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:rowCount="1">
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/md_theme_surfaceContainer"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Card 1"
+                android:textSize="16sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/md_theme_surfaceContainer"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Card 4"
+                android:textSize="16sp" />
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.gridlayout.widget.GridLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView2"
+        android:layout_width="0dp"
+        android:layout_height="142dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/round_con"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout"
+        app:layout_constraintVertical_bias="0.515" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:drawableStart="@drawable/newspaper_24dp_000_fill0_wght400_grad0_opsz24"
+        android:drawablePadding="8dp"
+        android:drawableTint="@color/md_theme_primaryFixedDim_mediumContrast"
+        android:text="Recent Activities"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.084"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
