@@ -99,7 +99,7 @@
             android:hint="Phone">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/password"
+                android:id="@+id/editTextPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="phone" />
@@ -216,7 +216,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
 
-                android:text="Button" />
+                android:text="Sign up" />
         </LinearLayout>
 
         <!-- Already have an account? and Sign in in one horizontal row -->
@@ -276,6 +276,7 @@
 
         <!-- Email Input -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emailLayout"
             style="@style/Widget.MyApp.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -292,6 +293,7 @@
 
         <!-- Password Input -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordLayout"
             style="@style/Widget.MyApp.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -305,6 +307,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
+
 
         <!-- Login and Skip Buttons -->
         <LinearLayout

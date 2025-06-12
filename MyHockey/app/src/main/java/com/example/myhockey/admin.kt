@@ -26,18 +26,12 @@ class admin : AppCompatActivity() {
         binding = ActivityAdminBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.adminToolbar) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            view.setPadding(0, systemBars.top, 0, 0)
-            insets
-        }
 
         binding.adminBottomNavigationView.setOnItemSelectedListener { item ->
             val selectedFragment = when (item.itemId) {
                 R.id.home -> admin_home()
                 R.id.news -> admin_news_report()
                 R.id.matches -> admin_fixtures_updates()
-                R.id.live_scores -> admin_live_score_update()
                 R.id.requests -> admin_coach_requests()
                 else -> admin_home()
             }

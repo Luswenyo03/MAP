@@ -36,8 +36,6 @@ class coach : AppCompatActivity() {
                 R.id.home -> coach_home_page()
                 R.id.players -> coach_player_management()
                 R.id.team -> coach_team_management()
-                R.id.chat -> coach_chat()
-                R.id.requests -> request_coach()
                 else -> coach_home_page()
             }
             replaceFragment(selectedFragment)

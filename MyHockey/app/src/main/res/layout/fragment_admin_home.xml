@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Card 1"
+                android:text=""
                 android:textSize="16sp" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Card 4"
+                android:text=""
                 android:textSize="16sp" />
         </com.google.android.material.card.MaterialCardView>
     </androidx.gridlayout.widget.GridLayout>

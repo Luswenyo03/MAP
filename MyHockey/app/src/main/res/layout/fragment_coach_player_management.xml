@@ -25,12 +25,12 @@
             android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:drawableStart="@drawable/person_add_24dp_e8eaed_fill0_wght400_grad0_opsz24"
             android:drawablePadding="8dp"
             android:drawableTint="@color/md_theme_inverseSurface"
-            android:layout_gravity="center_vertical"
-            android:text="Team management"
+            android:text="Player management"
             android:textColor="@color/md_theme_inverseSurface"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -55,7 +55,7 @@
         android:drawableStart="@drawable/person_add_24dp_e8eaed_fill0_wght400_grad0_opsz24"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
-        android:text="All teams"
+        android:text="All players"
         android:textSize="16sp"
         android:textStyle="bold" />
 

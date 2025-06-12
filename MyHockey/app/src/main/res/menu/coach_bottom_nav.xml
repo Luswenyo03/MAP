@@ -18,18 +18,6 @@
         android:iconTint="@color/md_theme_secondaryFixed_highContrast"
         android:title="Team">
     </item>
-    <item
-        android:id="@+id/chat"
-        android:iconTint="@color/md_theme_secondaryFixed_highContrast"
-        android:icon="@drawable/forum_24dp_e8eaed_fill0_wght400_grad0_opsz24"
-        android:title="Message">
-    </item>
 
-    <item
-        android:id="@+id/requests"
-        android:iconTint="@color/md_theme_secondaryFixed_highContrast"
-        android:icon="@drawable/notifications_24dp_e8eaed_fill0_wght400_grad0_opsz24"
-        android:title="Requests">
-    </item>
 
 </menu>

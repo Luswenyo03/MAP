@@ -3,6 +3,7 @@ package com.example.myhockey
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
@@ -12,8 +13,12 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.database.FirebaseDatabase
+import java.text.SimpleDateFormat
+import java.util.*
 
 class landing_page : Fragment() {
 
@@ -34,7 +39,7 @@ class landing_page : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_landing_page, container, false)
     }
@@ -53,46 +58,40 @@ class landing_page : Fragment() {
         viewPager = view.findViewById(R.id.newsViewPager)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabIndicator)
 
-        val newsList = listOf(
-            NewsItem(
-                R.drawable.news_1,
-                "Hockey finals coming soon!",
-                "Sat, 25 May · 3:30PM",
-                "The finals are scheduled for next weekend with all teams ready."
-            ),
-            NewsItem(
-                R.drawable.news_2,
-                "Training camp recap",
-                "Fri, 24 May · 10:00AM",
-                "Highlights and key takeaways from this week's training camp."
-            ),
-            NewsItem(
-                R.drawable.news_3,
-                "Top 5 goals this season",
-                "Thu, 23 May · 6:00PM",
-                "A countdown of the best goals scored this season."
-            ),
-            NewsItem(
-                R.drawable.news_4,
-                "Interview with MVP",
-                "Wed, 22 May · 2:00PM",
-                "An exclusive interview with the league's most valuable player."
-            ),
-            NewsItem(
-                R.drawable.news_5,
-                "League standings update",
-                "Tue, 21 May · 1:00PM",
-                "Latest rankings and statistics of the current hockey season."
-            )
-        )
+        // Load news from Firebase
+        val database = FirebaseDatabase.getInstance()
+        val newsRef = database.getReference("news")
 
-        viewPager.adapter = NewsAdapter(newsList)
+        newsRef.orderByChild("timestamp").get()
+            .addOnSuccessListener { snapshot ->
+                Log.d("FirebaseDebug", "News data snapshot received: ${snapshot.exists()}")
 
-        // Attach TabLayout with ViewPager2
-        TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
+                val newsList = mutableListOf<NewsItem>()
+                for (child in snapshot.children) {
+                    val item = child.getValue(NewsItem::class.java)
+                    if (item != null) {
+                        newsList.add(item)
+                    } else {
+                        Log.e("FirebaseDebug", "Null news item at key: ${child.key}")
+                    }
+                }
 
-        // Start auto scroll after 3 seconds delay
-        autoScrollHandler.postDelayed(autoScrollRunnable, 3000)
+                Log.d("FirebaseDebug", "Loaded ${newsList.size} news items")
+
+                if (newsList.isEmpty()) {
+                    Toast.makeText(requireContext(), "No news available", Toast.LENGTH_SHORT).show()
+                }
+
+                viewPager.adapter = NewsAdapter(newsList)
+                TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
+
+                // Start auto scroll after 3 seconds delay
+                autoScrollHandler.postDelayed(autoScrollRunnable, 3000)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirebaseDebug", "Failed to load news", exception)
+                Toast.makeText(requireContext(), "Failed to load news: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
 
         // Pause auto-scroll on touch and resume after release
         viewPager.getChildAt(0).setOnTouchListener { _, event ->
@@ -122,15 +121,18 @@ class landing_page : Fragment() {
             .start()
     }
 
-    // News data class with content field added
+    // Data class for Firebase news items (with explicit no-arg constructor)
     data class NewsItem(
-        val imageRes: Int,
-        val title: String,
-        val date: String,
-        val content: String
-    )
+        val imageUrl: String = "",
+        val title: String = "",
+        val date: String = "",
+        val content: String = "",
+        val timestamp: Long = 0
+    ) {
+        constructor() : this("", "", "", "", 0)
+    }
 
-    // RecyclerView Adapter for news
+    // Adapter for ViewPager2 news
     inner class NewsAdapter(private val newsList: List<NewsItem>) :
         RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
@@ -139,7 +141,6 @@ class landing_page : Fragment() {
             val title: TextView = view.findViewById(R.id.newsTitle)
             val date: TextView = view.findViewById(R.id.newsDate)
             val readMore: TextView = view.findViewById(R.id.readMore)
-            // content field is NOT displayed yet
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
@@ -152,12 +153,26 @@ class landing_page : Fragment() {
 
         override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
             val news = newsList[position]
-            holder.image.setImageResource(news.imageRes)
+
+            Glide.with(holder.image.context)
+                .load(news.imageUrl)
+                .placeholder(R.drawable.placeholder)
+                .into(holder.image)
+
             holder.title.text = news.title
-            holder.date.text = news.date
+
+            // Format timestamp to readable date string
+            val dateString = if (news.timestamp != 0L) {
+                SimpleDateFormat("EEE, dd MMM · hh:mm a", Locale.getDefault())
+                    .format(Date(news.timestamp))
+            } else {
+                "Unknown Date"
+            }
+            holder.date.text = dateString
 
             holder.readMore.setOnClickListener {
                 Toast.makeText(holder.itemView.context, "Read more: ${news.title}", Toast.LENGTH_SHORT).show()
+                // TODO: Open full content in a dialog or new screen if needed
             }
         }
     }

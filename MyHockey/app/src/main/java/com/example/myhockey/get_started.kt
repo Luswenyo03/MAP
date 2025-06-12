@@ -18,7 +18,7 @@ class GetStartedFragment : Fragment() {
 
         val button = view.findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            val intent = Intent(requireContext(),admin::class.java)
+            val intent = Intent(requireContext(),user_auth::class.java)
             //We had user_auth
             startActivity(intent)
         }

@@ -18,12 +18,6 @@
         android:iconTint="@color/md_theme_secondaryFixed_highContrast"
         android:title="Matches">
     </item>
-    <item
-        android:id="@+id/live_scores"
-        android:iconTint="@color/md_theme_secondaryFixed_highContrast"
-        android:icon="@drawable/live_tv_24px"
-        android:title="Live">
-    </item>
 
     <item
         android:id="@+id/requests"
