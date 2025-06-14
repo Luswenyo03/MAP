@@ -21,7 +21,6 @@ import com.cloudinary.utils.ObjectUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,7 +65,7 @@ class coach_player_management : Fragment() {
         fabAddPlayer = view.findViewById(R.id.add_team_button)
 
         playersList = mutableListOf()
-        adapter = PlayerAdapter(playersList)
+        adapter = PlayerAdapter(playersList) { player -> showEditPlayerDialog(player) }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
@@ -87,7 +86,6 @@ class coach_player_management : Fragment() {
 
         return view
     }
-
 
     private fun loadPlayers() {
         val currentCoachId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -112,6 +110,32 @@ class coach_player_management : Fragment() {
         })
     }
 
+    private fun deletePlayer(player: Player) {
+        val playersRef = FirebaseDatabase.getInstance().reference
+        val updates = mutableMapOf<String, Any?>(
+            "players/${player.id}" to null,
+            "allPlayerIds/${player.idNumber}" to null
+        )
+
+        playersRef.updateChildren(updates)
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Player deleted", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Failed to delete player: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("FirebaseDatabase", "Delete player error: ${e.message}", e)
+            }
+    }
+
+    private fun showDeleteConfirmationDialog(player: Player) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Player")
+            .setMessage("Are you sure you want to delete ${player.name}? This action cannot be undone.")
+            .setPositiveButton("Delete") { _, _ -> deletePlayer(player) }
+            .setNegativeButton("Cancel") { d, _ -> d.dismiss() }
+            .create()
+            .show()
+    }
 
     private fun showAddPlayerDialog() {
         dialogView = layoutInflater.inflate(R.layout.dialog_add_player, null)
@@ -156,6 +180,148 @@ class coach_player_management : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private fun showEditPlayerDialog(player: Player) {
+        dialogView = layoutInflater.inflate(R.layout.dialog_add_player, null)
+        val nameInput = dialogView?.findViewById<EditText>(R.id.playerNameInput)
+        val positionInput = dialogView?.findViewById<EditText>(R.id.playerPositionInput)
+        val idNumberInput = dialogView?.findViewById<EditText>(R.id.playerIdInput)
+        val selectImageBtn = dialogView?.findViewById<Button>(R.id.selectImageBtn)
+        val imagePreview = dialogView?.findViewById<ImageView>(R.id.playerImagePreview)
+
+        // Pre-fill dialog with player data
+        nameInput?.setText(player.name)
+        positionInput?.setText(player.position)
+        idNumberInput?.setText(player.idNumber)
+        selectedImageUri = null // Reset image URI unless a new one is selected
+        if (!player.imageUrl.isNullOrEmpty()) {
+            Glide.with(requireContext())
+                .load(player.imageUrl)
+                .into(imagePreview!!)
+        } else {
+            imagePreview?.setImageDrawable(null)
+        }
+
+        selectImageBtn?.setOnClickListener {
+            requestStoragePermission()
+        }
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Edit Player")
+            .setView(dialogView)
+            .setPositiveButton("Save", null)
+            .setNegativeButton("Cancel") { d, _ -> d.dismiss() }
+            .setNeutralButton("Delete") { _, _ -> showDeleteConfirmationDialog(player) }
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val name = nameInput?.text.toString().trim()
+                val position = positionInput?.text.toString().trim()
+                val idNumber = idNumberInput?.text.toString().trim()
+
+                if (name.isEmpty() || position.isEmpty() || idNumber.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                checkPlayerIdForEdit(player, name, position, idNumber, dialog)
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun checkPlayerIdForEdit(player: Player, name: String, position: String, idNumber: String, dialog: AlertDialog) {
+        if (idNumber == player.idNumber) {
+            // ID hasn't changed, proceed to update
+            updatePlayer(player, name, position, idNumber, dialog)
+            return
+        }
+
+        // Check if new ID is already in use
+        val allPlayerIdsRef = FirebaseDatabase.getInstance().reference.child("allPlayerIds").child(idNumber)
+        allPlayerIdsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    Toast.makeText(requireContext(), "This ID is already registered.", Toast.LENGTH_LONG).show()
+                    return
+                }
+                updatePlayer(player, name, position, idNumber, dialog)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Check failed: ${error.message}", Toast.LENGTH_LONG).show()
+                Log.e("FirebaseDatabase", "Check player ID error: ${error.message}", error.toException())
+            }
+        })
+    }
+
+    private fun updatePlayer(player: Player, name: String, position: String, idNumber: String, dialog: AlertDialog) {
+        if (selectedImageUri == null) {
+            // No new image, update player with existing image URL
+            saveUpdatedPlayer(player, name, position, idNumber, player.imageUrl ?: "", dialog)
+            return
+        }
+
+        // Upload new image
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val inputStream = selectedImageUri?.let { requireContext().contentResolver.openInputStream(it) }
+                    ?: throw Exception("No image selected")
+                val uploadResult = cloudinary.uploader().upload(inputStream, ObjectUtils.emptyMap())
+                val imageUrl = uploadResult["secure_url"] as? String ?: throw Exception("Failed to get image URL")
+
+                withContext(Dispatchers.Main) {
+                    saveUpdatedPlayer(player, name, position, idNumber, imageUrl, dialog)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Image upload failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Log.e("CloudinaryError", "Upload error: ${e.message}", e)
+                }
+            }
+        }
+    }
+
+    private fun saveUpdatedPlayer(player: Player, name: String, position: String, idNumber: String, imageUrl: String, dialog: AlertDialog) {
+        val coachId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
+            Toast.makeText(requireContext(), "User not logged in.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val updatedPlayer = Player(
+            id = player.id,
+            name = name,
+            position = position,
+            imageUrl = imageUrl,
+            coachId = coachId,
+            idNumber = idNumber
+        )
+
+        val playersRef = FirebaseDatabase.getInstance().reference
+        val updates = mutableMapOf<String, Any>(
+            "players/${player.id}" to updatedPlayer
+        )
+
+        // Update allPlayerIds if ID number changed
+        if (idNumber != player.idNumber) {
+            player.idNumber?.let { oldId ->
+                updates["allPlayerIds/$oldId"]
+            }
+            updates["allPlayerIds/$idNumber"] = true
+        }
+
+        playersRef.updateChildren(updates)
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Player updated", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Failed to update player: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("FirebaseDatabase", "Update player error: ${e.message}", e)
+            }
     }
 
     private fun checkPlayerExistsAndUpload(name: String, position: String, idNumber: String, dialog: AlertDialog) {
@@ -276,13 +442,24 @@ data class Player(
     var idNumber: String? = null
 )
 
-class PlayerAdapter(private val players: List<Player>) :
-    RecyclerView.Adapter<PlayerAdapter.PlayerViewHolder>() {
+class PlayerAdapter(
+    private val players: List<Player>,
+    private val onItemClick: (Player) -> Unit
+) : RecyclerView.Adapter<PlayerAdapter.PlayerViewHolder>() {
 
     inner class PlayerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val playerImage: ImageView = itemView.findViewById(R.id.playerImage)
         val playerName: TextView = itemView.findViewById(R.id.playerName)
         val playerPosition: TextView = itemView.findViewById(R.id.playerPosition)
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(players[position])
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerViewHolder {
@@ -295,12 +472,12 @@ class PlayerAdapter(private val players: List<Player>) :
         holder.playerName.text = player.name ?: "Unknown"
         holder.playerPosition.text = player.position ?: "Unknown"
 
-        // If you have an image URL, load it using Glide or Picasso, else use a placeholder
+        // Load image using Glide
         val context = holder.itemView.context
         if (!player.imageUrl.isNullOrEmpty()) {
             Glide.with(context)
                 .load(player.imageUrl)
-                .placeholder(R.drawable.person_add_24dp_e8eaed_fill0_wght400_grad0_opsz24) // your placeholder
+                .placeholder(R.drawable.person_add_24dp_e8eaed_fill0_wght400_grad0_opsz24)
                 .into(holder.playerImage)
         } else {
             holder.playerImage.setImageResource(R.drawable.person_add_24dp_e8eaed_fill0_wght400_grad0_opsz24)

@@ -30,7 +30,6 @@ class user_signup : Fragment() {
     private lateinit var dbRef: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
-
     companion object {
         const val FILE_PICKER_REQUEST_CODE = 1001
         const val ADMIN_EMAIL = "admin@example.com"
@@ -64,6 +63,7 @@ class user_signup : Fragment() {
         val passwordSignIn = view.findViewById<TextInputEditText>(R.id.login_password)
         val emailInputLayout = view.findViewById<TextInputLayout>(R.id.emailLayout)
         val passwordInputLayout = view.findViewById<TextInputLayout>(R.id.passwordLayout)
+        val forgotPassword = view.findViewById<TextView>(R.id.forgotPasswordText)
 
         // Sign-up fields
         val firstNameInput = view.findViewById<TextInputEditText>(R.id.editTextFirstName)
@@ -98,6 +98,24 @@ class user_signup : Fragment() {
         // Skip buttons
         signupSkipButton.setOnClickListener { goToMainActivity() }
         loginSkipButton.setOnClickListener { goToMainActivity() }
+
+        // Forgot Password
+        forgotPassword.setOnClickListener {
+            val email = emailSignIn.text.toString().trim()
+            if (email.isEmpty()) {
+                emailInputLayout.error = "Please enter your email"
+                return@setOnClickListener
+            } else {
+                emailInputLayout.error = null
+            }
+            auth.sendPasswordResetEmail(email)
+                .addOnSuccessListener {
+                    Toast.makeText(context, "Password reset email sent!", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(context, "Failed to send reset email: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
 
         // Sign-in login button
         loginBtn.setOnClickListener {
@@ -240,8 +258,6 @@ class user_signup : Fragment() {
     }
 
     private fun createDefaultAdmin() {
-
-
         auth.signInWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PASSWORD)
             .addOnSuccessListener {
                 // Admin exists, ensure database entry
@@ -394,4 +410,3 @@ class user_signup : Fragment() {
         })
     }
 }
-
